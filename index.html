@@ -1,0 +1,813 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
+  <title>LF people to do Brawlstars</title>
+  <style>
+    :root {
+      --bg: #0b1020;
+      --bg2: #111a33;
+      --card: rgba(255,255,255,0.08);
+      --card2: rgba(255,255,255,0.12);
+      --text: #f5f7ff;
+      --muted: rgba(245,247,255,0.7);
+      --line: rgba(255,255,255,0.12);
+      --accent: #ffd84d;
+      --accent2: #ff8a4c;
+      --good: #4ade80;
+      --danger: #ff6b6b;
+      --shadow: 0 20px 50px rgba(0,0,0,0.35);
+      --radius: 22px;
+    }
+
+    * { box-sizing: border-box; }
+    html, body { height: 100%; }
+    body {
+      margin: 0;
+      font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+      color: var(--text);
+      background:
+        radial-gradient(circle at top left, rgba(255, 216, 77, 0.25), transparent 28%),
+        radial-gradient(circle at top right, rgba(255, 138, 76, 0.18), transparent 26%),
+        linear-gradient(180deg, var(--bg), var(--bg2));
+      background-attachment: fixed;
+    }
+
+    .wrap {
+      max-width: 1100px;
+      margin: 0 auto;
+      padding: 18px 14px 36px;
+    }
+
+    .hero {
+      position: relative;
+      overflow: hidden;
+      border: 1px solid var(--line);
+      border-radius: 30px;
+      padding: 22px;
+      background: linear-gradient(135deg, rgba(255,255,255,0.12), rgba(255,255,255,0.06));
+      box-shadow: var(--shadow);
+      backdrop-filter: blur(10px);
+    }
+
+    .hero::after {
+      content: "";
+      position: absolute;
+      inset: auto -60px -120px auto;
+      width: 240px;
+      height: 240px;
+      border-radius: 50%;
+      background: radial-gradient(circle, rgba(255,216,77,0.35), rgba(255,138,76,0.05) 60%, transparent 70%);
+      filter: blur(10px);
+      pointer-events: none;
+    }
+
+    .topbar {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 12px;
+      margin-bottom: 18px;
+      flex-wrap: wrap;
+    }
+
+    .brand {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      min-width: 0;
+    }
+
+    .gem {
+      width: 52px;
+      height: 52px;
+      border-radius: 18px;
+      background: linear-gradient(145deg, #7dff8a, #20c968 60%, #109c4b);
+      position: relative;
+      box-shadow: 0 10px 25px rgba(32,201,104,0.35);
+      flex: 0 0 auto;
+    }
+    .gem::before, .gem::after {
+      content: "";
+      position: absolute;
+      inset: 8px;
+      border: 3px solid rgba(255,255,255,0.6);
+      border-top-color: transparent;
+      border-left-color: transparent;
+      transform: rotate(45deg);
+      border-radius: 7px;
+    }
+    .gem::after {
+      inset: 15px;
+      border-color: rgba(255,255,255,0.35);
+      border-top-color: transparent;
+      border-left-color: transparent;
+    }
+
+    h1 {
+      margin: 0;
+      font-size: clamp(26px, 5vw, 44px);
+      line-height: 1.05;
+      letter-spacing: -0.03em;
+    }
+
+    .subtitle {
+      margin: 6px 0 0;
+      color: var(--muted);
+      font-size: 14px;
+    }
+
+    .pillrow {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+      align-items: center;
+      justify-content: flex-end;
+    }
+
+    .pill {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      padding: 10px 14px;
+      border-radius: 999px;
+      border: 1px solid var(--line);
+      background: rgba(255,255,255,0.06);
+      color: var(--text);
+      font-size: 13px;
+      text-decoration: none;
+      white-space: nowrap;
+    }
+
+    .grid {
+      display: grid;
+      grid-template-columns: 1.2fr 0.8fr;
+      gap: 16px;
+      margin-top: 16px;
+    }
+
+    @media (max-width: 920px) {
+      .grid { grid-template-columns: 1fr; }
+    }
+
+    .card {
+      border: 1px solid var(--line);
+      border-radius: var(--radius);
+      background: linear-gradient(180deg, rgba(255,255,255,0.09), rgba(255,255,255,0.06));
+      box-shadow: var(--shadow);
+      backdrop-filter: blur(10px);
+      overflow: hidden;
+    }
+
+    .card-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 12px;
+      padding: 16px 16px 0;
+    }
+
+    .card-title {
+      margin: 0;
+      font-size: 18px;
+      letter-spacing: -0.02em;
+    }
+
+    .card-subtitle {
+      margin: 4px 0 0;
+      color: var(--muted);
+      font-size: 13px;
+    }
+
+    .content { padding: 16px; }
+
+    .form-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 12px;
+    }
+
+    .form-grid .full { grid-column: 1 / -1; }
+
+    @media (max-width: 680px) {
+      .form-grid { grid-template-columns: 1fr; }
+    }
+
+    label {
+      display: block;
+      margin: 0 0 7px;
+      color: rgba(245,247,255,0.85);
+      font-size: 13px;
+      font-weight: 600;
+    }
+
+    input, select, textarea {
+      width: 100%;
+      border: 1px solid rgba(255,255,255,0.14);
+      background: rgba(8,12,23,0.72);
+      color: var(--text);
+      border-radius: 16px;
+      outline: none;
+      padding: 14px 14px;
+      font-size: 15px;
+      transition: border-color .15s, transform .15s, box-shadow .15s;
+    }
+
+    textarea { min-height: 110px; resize: vertical; }
+
+    input:focus, select:focus, textarea:focus {
+      border-color: rgba(255,216,77,0.8);
+      box-shadow: 0 0 0 4px rgba(255,216,77,0.12);
+    }
+
+    .actions {
+      display: flex;
+      gap: 10px;
+      flex-wrap: wrap;
+      margin-top: 12px;
+    }
+
+    button {
+      border: 0;
+      border-radius: 16px;
+      padding: 14px 18px;
+      font-weight: 800;
+      font-size: 15px;
+      cursor: pointer;
+      transition: transform .12s ease, opacity .12s ease, box-shadow .12s ease;
+    }
+
+    button:active { transform: translateY(1px) scale(0.99); }
+
+    .btn-primary {
+      color: #1c1600;
+      background: linear-gradient(135deg, var(--accent), #fff0a3);
+      box-shadow: 0 14px 30px rgba(255,216,77,0.22);
+    }
+
+    .btn-secondary {
+      color: var(--text);
+      background: rgba(255,255,255,0.08);
+      border: 1px solid rgba(255,255,255,0.12);
+    }
+
+    .btn-danger {
+      color: white;
+      background: linear-gradient(135deg, #ff6b6b, #ff8a4c);
+      box-shadow: 0 12px 24px rgba(255,107,107,0.2);
+    }
+
+    .section {
+      margin-top: 16px;
+      border-top: 1px solid rgba(255,255,255,0.08);
+      padding-top: 16px;
+    }
+
+    .list {
+      display: grid;
+      gap: 12px;
+    }
+
+    .post {
+      border: 1px solid rgba(255,255,255,0.11);
+      background: rgba(8,12,23,0.52);
+      border-radius: 20px;
+      padding: 14px;
+    }
+
+    .post-top {
+      display: flex;
+      justify-content: space-between;
+      gap: 12px;
+      align-items: flex-start;
+    }
+
+    .post-title {
+      margin: 0;
+      font-size: 17px;
+      letter-spacing: -0.02em;
+    }
+
+    .post-meta {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+      margin-top: 8px;
+    }
+
+    .tag {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      padding: 7px 10px;
+      border-radius: 999px;
+      background: rgba(255,255,255,0.08);
+      color: rgba(245,247,255,0.9);
+      font-size: 12px;
+    }
+
+    .post-desc {
+      margin: 12px 0 0;
+      color: rgba(245,247,255,0.82);
+      line-height: 1.55;
+      white-space: pre-wrap;
+      word-break: break-word;
+      font-size: 14px;
+    }
+
+    .post-actions {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      gap: 10px;
+      margin-top: 12px;
+      flex-wrap: wrap;
+    }
+
+    .small {
+      font-size: 12px;
+      color: var(--muted);
+    }
+
+    .chat-box {
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+      max-height: 670px;
+    }
+
+    .chat-list {
+      display: grid;
+      gap: 10px;
+      max-height: 390px;
+      overflow: auto;
+      padding-right: 4px;
+    }
+
+    .msg {
+      padding: 12px 12px;
+      border-radius: 18px;
+      border: 1px solid rgba(255,255,255,0.1);
+      background: rgba(8,12,23,0.52);
+    }
+
+    .msg-head {
+      display: flex;
+      gap: 8px;
+      align-items: center;
+      justify-content: space-between;
+      margin-bottom: 5px;
+    }
+
+    .msg-name { font-weight: 800; font-size: 13px; }
+    .msg-time { color: var(--muted); font-size: 11px; }
+    .msg-text { margin: 0; color: rgba(245,247,255,0.88); line-height: 1.5; white-space: pre-wrap; word-break: break-word; }
+
+    .sticky-note {
+      margin-top: 10px;
+      font-size: 12px;
+      color: rgba(245,247,255,0.66);
+    }
+
+    .empty {
+      padding: 20px;
+      text-align: center;
+      color: rgba(245,247,255,0.65);
+      border: 1px dashed rgba(255,255,255,0.15);
+      border-radius: 20px;
+      background: rgba(255,255,255,0.03);
+    }
+
+    .toast {
+      position: fixed;
+      left: 50%;
+      bottom: 20px;
+      transform: translateX(-50%);
+      background: rgba(14,18,33,0.92);
+      color: white;
+      padding: 12px 16px;
+      border: 1px solid rgba(255,255,255,0.12);
+      border-radius: 999px;
+      box-shadow: var(--shadow);
+      opacity: 0;
+      pointer-events: none;
+      transition: opacity .2s, transform .2s;
+      z-index: 9999;
+      max-width: calc(100vw - 24px);
+      text-align: center;
+      font-size: 14px;
+    }
+    .toast.show { opacity: 1; transform: translateX(-50%) translateY(-4px); }
+
+    .muted-link {
+      color: #d8e4ff;
+      text-decoration: underline;
+      cursor: pointer;
+    }
+  </style>
+</head>
+<body>
+  <div class="wrap">
+    <header class="hero">
+      <div class="topbar">
+        <div class="brand">
+          <div class="gem" aria-hidden="true"></div>
+          <div>
+            <h1>LF people to do Brawlstars</h1>
+            <p class="subtitle">카톡방에서 바로 공유하는 브롤스타즈 파티 모집 · 실시간 목록 · 실시간 채팅</p>
+          </div>
+        </div>
+        <div class="pillrow">
+          <span class="pill">🔥 모집 중 <b id="postCount">0</b></span>
+          <span class="pill">💬 채팅 <b id="chatCount">0</b></span>
+          <a class="pill" id="shareBtn" href="#">🔗 링크 복사</a>
+        </div>
+      </div>
+      <p class="subtitle">자기 글은 자신만 삭제할 수 있게 만들었고, 목록은 Firestore에 실시간으로 저장돼.</p>
+    </header>
+
+    <div class="grid">
+      <section class="card">
+        <div class="card-header">
+          <div>
+            <h2 class="card-title">파티 모집 등록</h2>
+            <p class="card-subtitle">닉네임, 트로피, 경쟁전 티어를 입력하고 모집글을 올려보자.</p>
+          </div>
+        </div>
+        <div class="content">
+          <div class="form-grid">
+            <div>
+              <label for="nickname">닉네임</label>
+              <input id="nickname" maxlength="20" placeholder="예: 철수" />
+            </div>
+            <div>
+              <label for="trophies">트로피</label>
+              <input id="trophies" type="number" min="0" max="100000" placeholder="예: 42000" />
+            </div>
+            <div>
+              <label for="tier">경쟁전 티어</label>
+              <select id="tier">
+                <option>브론즈</option>
+                <option>실버</option>
+                <option>골드</option>
+                <option>에메랄드</option>
+                <option>다이아</option>
+                <option>마스터</option>
+                <option>챌린저</option>
+              </select>
+            </div>
+            <div>
+              <label for="mode">모집 모드</label>
+              <select id="mode">
+                <option>랭크</option>
+                <option>쇼다운</option>
+                <option>브롤볼</option>
+                <option>바운티</option>
+                <option>젬 그랩</option>
+                <option>핫존</option>
+                <option>녹아웃</option>
+              </select>
+            </div>
+            <div class="full">
+              <label for="title">제목</label>
+              <input id="title" maxlength="40" placeholder="예: 랭크 같이할 사람 구해요" />
+            </div>
+            <div class="full">
+              <label for="description">설명</label>
+              <textarea id="description" maxlength="300" placeholder="예: 2명 구합니다. 마스터 이상 환영!"></textarea>
+            </div>
+          </div>
+          <div class="actions">
+            <button class="btn-primary" id="submitPost">모집글 올리기</button>
+            <button class="btn-secondary" id="clearForm">입력 초기화</button>
+          </div>
+          <p class="sticky-note">※ 같은 기기에서 올린 글만 삭제 버튼이 보임. 브라우저 저장소를 사용해 작성자 구분을 해.</p>
+
+          <div class="section">
+            <div class="card-header" style="padding:0 0 10px;">
+              <div>
+                <h2 class="card-title">모집 목록</h2>
+                <p class="card-subtitle">실시간으로 올라오는 글을 확인할 수 있어.</p>
+              </div>
+            </div>
+            <div id="posts" class="list"></div>
+          </div>
+        </div>
+      </section>
+
+      <aside class="card chat-box">
+        <div class="card-header">
+          <div>
+            <h2 class="card-title">실시간 채팅</h2>
+            <p class="card-subtitle">전체 이용자가 보는 공용 채팅방이야.</p>
+          </div>
+        </div>
+        <div class="content" style="display:flex; flex-direction:column; gap:12px;">
+          <div class="form-grid" style="grid-template-columns: 1fr; gap:12px;">
+            <div>
+              <label for="chatName">닉네임</label>
+              <input id="chatName" maxlength="20" placeholder="예: 영희" />
+            </div>
+            <div>
+              <label for="chatText">메시지</label>
+              <textarea id="chatText" maxlength="300" placeholder="채팅을 입력해봐"></textarea>
+            </div>
+          </div>
+          <div class="actions">
+            <button class="btn-primary" id="sendChat">전송</button>
+            <button class="btn-secondary" id="clearChat">채팅칸 비우기</button>
+          </div>
+          <div id="chatList" class="chat-list"></div>
+        </div>
+      </aside>
+    </div>
+  </div>
+
+  <div class="toast" id="toast"></div>
+
+  <script type="module">
+    import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.5/firebase-app.js";
+    import {
+      getFirestore,
+      collection,
+      addDoc,
+      deleteDoc,
+      doc,
+      query,
+      orderBy,
+      onSnapshot,
+      serverTimestamp,
+      limit
+    } from "https://www.gstatic.com/firebasejs/10.12.5/firebase-firestore.js";
+
+    const firebaseConfig = {
+      apiKey: "AIzaSyC4A5FZwtGqAZiVAwMY0xNuXQT29mtMW6Y",
+      authDomain: "lf-people-to-do-brawlstars.firebaseapp.com",
+      projectId: "lf-people-to-do-brawlstars",
+      storageBucket: "lf-people-to-do-brawlstars.firebasestorage.app",
+      messagingSenderId: "992812692062",
+      appId: "1:992812692062:web:581f316701f1c13db7bacf",
+      measurementId: "G-T0N92K2LHD"
+    };
+
+    const app = initializeApp(firebaseConfig);
+    const db = getFirestore(app);
+
+    const POSTS = "posts";
+    const CHAT = "chat";
+
+    const els = {
+      nickname: document.getElementById("nickname"),
+      trophies: document.getElementById("trophies"),
+      tier: document.getElementById("tier"),
+      mode: document.getElementById("mode"),
+      title: document.getElementById("title"),
+      description: document.getElementById("description"),
+      submitPost: document.getElementById("submitPost"),
+      clearForm: document.getElementById("clearForm"),
+      posts: document.getElementById("posts"),
+      chatName: document.getElementById("chatName"),
+      chatText: document.getElementById("chatText"),
+      sendChat: document.getElementById("sendChat"),
+      clearChat: document.getElementById("clearChat"),
+      chatList: document.getElementById("chatList"),
+      postCount: document.getElementById("postCount"),
+      chatCount: document.getElementById("chatCount"),
+      shareBtn: document.getElementById("shareBtn"),
+      toast: document.getElementById("toast")
+    };
+
+    const STORAGE_KEYS = {
+      userId: "brawl_user_id",
+      nickname: "brawl_nickname",
+      chatName: "brawl_chat_name"
+    };
+
+    let userId = localStorage.getItem(STORAGE_KEYS.userId);
+    if (!userId) {
+      userId = (crypto.randomUUID ? crypto.randomUUID() : `u_${Math.random().toString(36).slice(2)}_${Date.now()}`);
+      localStorage.setItem(STORAGE_KEYS.userId, userId);
+    }
+
+    els.nickname.value = localStorage.getItem(STORAGE_KEYS.nickname) || "";
+    els.chatName.value = localStorage.getItem(STORAGE_KEYS.chatName) || els.nickname.value || "";
+
+    function toast(message) {
+      els.toast.textContent = message;
+      els.toast.classList.add("show");
+      clearTimeout(toast._t);
+      toast._t = setTimeout(() => els.toast.classList.remove("show"), 2200);
+    }
+
+    function timeAgo(ts) {
+      if (!ts) return "방금";
+      const d = ts.toDate ? ts.toDate() : new Date(ts);
+      const diff = Math.max(0, Date.now() - d.getTime());
+      const s = Math.floor(diff / 1000);
+      if (s < 60) return `${s}초 전`;
+      const m = Math.floor(s / 60);
+      if (m < 60) return `${m}분 전`;
+      const h = Math.floor(m / 60);
+      if (h < 24) return `${h}시간 전`;
+      const day = Math.floor(h / 24);
+      return `${day}일 전`;
+    }
+
+    function escapeText(value) {
+      return String(value ?? "").trim();
+    }
+
+    function setSharedUrl() {
+      els.shareBtn.href = window.location.href;
+    }
+    setSharedUrl();
+
+    els.shareBtn.addEventListener("click", async (e) => {
+      e.preventDefault();
+      try {
+        await navigator.clipboard.writeText(window.location.href);
+        toast("링크를 복사했어.");
+      } catch {
+        toast("링크 복사에 실패했어. 주소창에서 직접 복사해줘.");
+      }
+    });
+
+    els.clearForm.addEventListener("click", () => {
+      els.title.value = "";
+      els.description.value = "";
+      toast("입력칸을 비웠어.");
+    });
+
+    els.clearChat.addEventListener("click", () => {
+      els.chatText.value = "";
+      toast("채팅칸을 비웠어.");
+    });
+
+    els.nickname.addEventListener("input", () => localStorage.setItem(STORAGE_KEYS.nickname, els.nickname.value.trim()));
+    els.chatName.addEventListener("input", () => localStorage.setItem(STORAGE_KEYS.chatName, els.chatName.value.trim()));
+
+    async function createPost() {
+      const nickname = escapeText(els.nickname.value);
+      const trophies = Number(els.trophies.value);
+      const tier = escapeText(els.tier.value);
+      const mode = escapeText(els.mode.value);
+      const title = escapeText(els.title.value);
+      const description = escapeText(els.description.value);
+
+      if (!nickname) return toast("닉네임을 입력해줘.");
+      if (!Number.isFinite(trophies) || trophies < 0) return toast("트로피 숫자를 입력해줘.");
+      if (!title) return toast("제목을 입력해줘.");
+      if (!description) return toast("설명을 입력해줘.");
+
+      localStorage.setItem(STORAGE_KEYS.nickname, nickname);
+
+      await addDoc(collection(db, POSTS), {
+        nickname,
+        trophies,
+        tier,
+        mode,
+        title,
+        description,
+        ownerId: userId,
+        createdAt: serverTimestamp()
+      });
+
+      els.title.value = "";
+      els.description.value = "";
+      toast("모집글이 올라갔어.");
+    }
+
+    async function sendChat() {
+      const nickname = escapeText(els.chatName.value) || escapeText(els.nickname.value) || "익명";
+      const text = escapeText(els.chatText.value);
+      if (!text) return toast("채팅 내용을 입력해줘.");
+      localStorage.setItem(STORAGE_KEYS.chatName, nickname);
+      await addDoc(collection(db, CHAT), {
+        nickname,
+        text,
+        ownerId: userId,
+        createdAt: serverTimestamp()
+      });
+      els.chatText.value = "";
+      toast("전송했어.");
+    }
+
+    els.submitPost.addEventListener("click", async () => {
+      els.submitPost.disabled = true;
+      try {
+        await createPost();
+      } catch (err) {
+        console.error(err);
+        toast("모집글 등록에 실패했어.");
+      } finally {
+        els.submitPost.disabled = false;
+      }
+    });
+
+    els.sendChat.addEventListener("click", async () => {
+      els.sendChat.disabled = true;
+      try {
+        await sendChat();
+      } catch (err) {
+        console.error(err);
+        toast("채팅 전송에 실패했어.");
+      } finally {
+        els.sendChat.disabled = false;
+      }
+    });
+
+    async function deletePost(postId) {
+      if (!confirm("이 모집글을 삭제할까?")) return;
+      await deleteDoc(doc(db, POSTS, postId));
+      toast("모집글을 삭제했어.");
+    }
+
+    function renderPosts(items) {
+      els.postCount.textContent = String(items.length);
+      if (!items.length) {
+        els.posts.innerHTML = `<div class="empty">아직 올라온 모집글이 없어. 첫 글을 올려보자!</div>`;
+        return;
+      }
+
+      els.posts.innerHTML = items.map(item => {
+        const mine = item.ownerId === userId;
+        const createdAt = timeAgo(item.createdAt);
+        return `
+          <article class="post">
+            <div class="post-top">
+              <div>
+                <h3 class="post-title">${item.title}</h3>
+                <div class="post-meta">
+                  <span class="tag">👤 ${item.nickname}</span>
+                  <span class="tag">🏆 ${item.trophies.toLocaleString()} 트로피</span>
+                  <span class="tag">⚔️ ${item.tier}</span>
+                  <span class="tag">🎯 ${item.mode}</span>
+                </div>
+              </div>
+              <div class="small">${createdAt}</div>
+            </div>
+            <p class="post-desc">${item.description}</p>
+            <div class="post-actions">
+              <span class="small">작성자 ${mine ? "· 내 글" : "· 공개 모집"}</span>
+              <div class="actions" style="margin-top:0;">
+                ${mine ? `<button class="btn-danger" data-delete-post="${item.id}">삭제</button>` : ``}
+              </div>
+            </div>
+          </article>
+        `;
+      }).join("");
+
+      els.posts.querySelectorAll("[data-delete-post]").forEach(btn => {
+        btn.addEventListener("click", () => deletePost(btn.dataset.deletePost));
+      });
+    }
+
+    function renderChat(items) {
+      els.chatCount.textContent = String(items.length);
+      if (!items.length) {
+        els.chatList.innerHTML = `<div class="empty">아직 채팅이 없어. 먼저 인사해봐!</div>`;
+        return;
+      }
+
+      els.chatList.innerHTML = items.map(item => `
+        <div class="msg">
+          <div class="msg-head">
+            <span class="msg-name">${item.nickname}</span>
+            <span class="msg-time">${timeAgo(item.createdAt)}</span>
+          </div>
+          <p class="msg-text">${item.text}</p>
+        </div>
+      `).join("");
+    }
+
+    const postsQuery = query(collection(db, POSTS), orderBy("createdAt", "desc"));
+    onSnapshot(postsQuery, (snap) => {
+      const items = snap.docs.map(docSnap => ({ id: docSnap.id, ...docSnap.data() }));
+      renderPosts(items);
+    }, (err) => {
+      console.error(err);
+      els.posts.innerHTML = `<div class="empty">목록을 불러오지 못했어. Firestore Rules를 확인해줘.</div>`;
+    });
+
+    const chatQuery = query(collection(db, CHAT), orderBy("createdAt", "desc"), limit(60));
+    onSnapshot(chatQuery, (snap) => {
+      const items = snap.docs.map(docSnap => ({ id: docSnap.id, ...docSnap.data() })).reverse();
+      renderChat(items);
+    }, (err) => {
+      console.error(err);
+      els.chatList.innerHTML = `<div class="empty">채팅을 불러오지 못했어. Firestore Rules를 확인해줘.</div>`;
+    });
+
+    window.addEventListener("keydown", (e) => {
+      if (e.key === "Enter" && !e.shiftKey) {
+        const active = document.activeElement;
+        if (active === els.chatText) {
+          e.preventDefault();
+          els.sendChat.click();
+        }
+      }
+    });
+  </script>
+</body>
+</html>
